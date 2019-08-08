@@ -132,12 +132,12 @@ def get_sources(session, base_uri):
     uri = f"{base_uri}/datasource/all_sources.json"
     return get_json(session, uri)
 
-def kis_get_interfaces(session, base_uri):
+def get_interfaces(session, base_uri):
     """
     Return a dictionary of all available interfaces on the kismet server
     """
     uri = f"{base_uri}/datasource/list_interfaces.json"
-    return kis_get_json(session, uri)
+    return get_json(session, uri)
 
 def have_source(session, base_uri, source_name):
     """
@@ -177,7 +177,7 @@ def have_interface(session, base_uri, interface_name):
     Arguments:
     interface_name -- The name of an interface to look for
     """
-    interfaces = kis_get_interfaces(session)
+    interfaces = get_interfaces(session, base_uri)
     for interface in interfaces:
         if interface['kismet.datasource.probed.interface'] == interface_name:
             return True
