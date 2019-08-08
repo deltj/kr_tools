@@ -1,2 +1,2 @@
 # kr_tools
-Kismet Rest Tools
+Some simple tools that use the Kismet Rest API

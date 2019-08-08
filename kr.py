@@ -106,9 +106,89 @@ def post_cmd(session, uri, obj):
         print(f"Kismet command failed for {uri} with status {response.status_code}")
         sys.exit(1)
 
+def post_cmd_json(session, uri, obj):
+    post_data = json.dumps(obj)
+    post_data = {
+            "json": post_data
+        }
+
+    response = http_post(session, uri, post_data)
+
+    if response.status_code != 200:
+        print(f"Kismet command failed for {uri} with status {response.status_code}")
+        sys.exit(1)
+
     json_result = response.content.decode('utf-8')
     dict_result = json.loads(json_result)
     return dict_result
 
 def check_session(session, base_uri):
     return get_bool(session, f"{base_uri}/session/check_session")
+
+def get_sources(session, base_uri):
+    """
+    Return a dictionary of all available datasources on the kismet server
+    """
+    uri = f"{base_uri}/datasource/all_sources.json"
+    return get_json(session, uri)
+
+def kis_get_interfaces(session, base_uri):
+    """
+    Return a dictionary of all available interfaces on the kismet server
+    """
+    uri = f"{base_uri}/datasource/list_interfaces.json"
+    return kis_get_json(session, uri)
+
+def have_source(session, base_uri, source_name):
+    """
+    This function determines whether the specified datasource is known to
+    the Kismet server
+
+    Arguments:
+    source_name -- The name of a datasource to look for
+    """
+    sources = get_sources(session, base_uri)
+    for source in sources:
+        if source['kismet.datasource.name'] == source_name:
+            return True
+    
+    return False
+
+def add_source(session, base_uri, interface_name):
+    """
+    This function adds the specified interface as a datasource
+
+    Arguments:
+    interface_name -- The name of an interface to look for
+    """
+    print(f"Adding datasource {interface_name}")
+
+    cmd = {
+        "definition": interface_name
+    }
+
+    post_cmd(session, f"{base_uri}/datasource/add_source.cmd", cmd)
+
+def have_interface(session, base_uri, interface_name):
+    """
+    This function determines whether the specified interface is known to
+    the Kismet server
+
+    Arguments:
+    interface_name -- The name of an interface to look for
+    """
+    interfaces = kis_get_interfaces(session)
+    for interface in interfaces:
+        if interface['kismet.datasource.probed.interface'] == interface_name:
+            return True
+
+    return False
+
+def set_channel(session, base_uri, uuid, channel):
+    print(f"Setting channel for datasource {uuid} to {channel}")
+
+    cmd = {
+        "channel": channel
+    }
+
+    post_cmd(session, f"{base_uri}/datasource/by-uuid/{uuid}/set_channel.cmd", cmd)

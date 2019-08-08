@@ -31,7 +31,7 @@ def animate(i, xs, ys):
 
     uri = f"{base_uri}/devices/by-mac/{mac}/devices.json"
     print(uri)
-    device_json = kr.post_cmd(session, uri, cmd)
+    device_json = kr.post_cmd_json(session, uri, cmd)
     rssi_rrd = device_json[0]['kismet.common.rrd.minute_vec']
     print(rssi_rrd)
 

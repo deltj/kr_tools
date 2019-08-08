@@ -119,7 +119,7 @@ if __name__ == "__main__":
             "fields": ["kismet.device.base.signal/kismet.common.signal.last_signal"]
         }
 
-        device_json = kr.post_cmd(session,
+        device_json = kr.post_cmd_json(session,
                 f"{base_uri}/devices/by-mac/{mac}/devices.json", cmd)
         rssi = device_json[0]['kismet.common.signal.last_signal']
 
